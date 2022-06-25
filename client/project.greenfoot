@@ -1,11 +1,11 @@
 #Greenfoot project file
 class.Background.image=background.png
 class.Blur.image=Blur.png
-class.David.image=character\ 2.png
+class.David.image=characters/david.png
 class.Frame.image=Frame.png
-class.TubeLong.image=Long.png
-class.TubeMedium.image=Medium.png
-class.TubeShort.image=Short.png
+class.TubeLong.image=pipes/Long.png
+class.TubeMedium.image=pipes/Medium.png
+class.TubeShort.image=pipes/Short.png
 dependency1.from=Background
 dependency1.to=Controller
 dependency1.type=UsesDependency
