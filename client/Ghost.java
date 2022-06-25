@@ -80,10 +80,4 @@ public class Ghost extends Character {
                 break;
         }
     }
-
-    @Override
-    public void die() {
-        super.die();
-        ghosts.remove(account);
-    }
 }

@@ -84,7 +84,7 @@ public class Instance extends World implements Communication {
         player = new Player(account, controller, scoreboard, ghosts);
         player.avatar(avatars.get(account));
         addObject(player, 250, 375);
-        lobby.order = new ArrayList<String>();
+        lobby.order = new ArrayList<>();
     }
 
     @Override
@@ -101,12 +101,22 @@ public class Instance extends World implements Communication {
 
             readies.put(account, false);
 
-            if (Objects.equals(this.account, account)) {
+            if (!Objects.equals(this.account, account)) {
                 ghosts.get(account).die();
+                ghosts.remove(account);
+            } else {
+                player = null;
             }
 
             if (!readies.containsValue(true)) {
                 game = false;
+
+                for (int i = 0; i < lobby.order.size(); i++) {
+                    lobby.entry(lobby.order.get(i));
+                }
+
+                lobby.ready.ready(false);
+
                 Greenfoot.setWorld(lobby);
             }
         }
@@ -116,7 +126,7 @@ public class Instance extends World implements Communication {
     public void onSessionUserJoined(String account, String username) {
         if (!Objects.equals(this.account, account)) {
             Ghost ghost = new Ghost(account, controller, scoreboard, ghosts);
-            ghost.avatar((byte) 0);
+            ghost.avatar(0);
             addObject(ghost, 250, 375);
 
             users.put(account, username);
@@ -155,6 +165,10 @@ public class Instance extends World implements Communication {
     public void onSessionAvatarUpdate(String account, int avatar) {
         avatars.put(account, avatar);
         lobby.entry(account);
+
+        if (!Objects.equals(this.account, account)) {
+            ghosts.get(account).avatar(avatar);
+        }
     }
 
     @Override
