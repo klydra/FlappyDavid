@@ -5,11 +5,9 @@ import java.util.Objects;
 
 public class Instance extends World implements Communication {
     public Controller controller;
-    public boolean game = false;
-    public int passed;
     public Frame frame;
 
-    public String account; // TODO : Pre-convert account to string
+    public String account;
     String username;
 
     public Byte character = 0;
@@ -146,7 +144,6 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionStart() {
-        game = true;
     }
 
     @Override
@@ -157,7 +154,7 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionUnReady(String account) {
         if (ghosts.size() == 0 && player == null) {
-            /* Game Finished */
+            System.out.println("done");
         }
     }
 
