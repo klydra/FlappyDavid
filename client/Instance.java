@@ -1,6 +1,7 @@
 import greenfoot.*;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Instance extends World implements Communication {
     public Controller controller;
@@ -8,14 +9,14 @@ public class Instance extends World implements Communication {
     public int passed;
     public Frame frame;
 
-    public byte[] account; // TODO : Pre-convert account to string
+    public String account; // TODO : Pre-convert account to string
     String username;
 
     public Byte character = 0;
     public Player player;
-    public HashMap<byte[], Integer> scoreboard = new HashMap<>();
-    public HashMap<byte[], String> users = new HashMap<>();
-    public HashMap<byte[], Ghost> ghosts = new HashMap<>();
+    public HashMap<String, Integer> scoreboard = new HashMap<>();
+    public HashMap<String, String> users = new HashMap<>();
+    public HashMap<String, Ghost> ghosts = new HashMap<>();
 
     public Instance() {
         super(1000, 750, 1);
@@ -31,9 +32,6 @@ public class Instance extends World implements Communication {
     }
 
     public void act() {
-        if (game) {
-            addScore();
-        }
     }
 
     @Override
@@ -44,19 +42,15 @@ public class Instance extends World implements Communication {
     }
 
     public void addScore() {
-        if (passed == 0) {
-            passed = 20;
+        if (player != null) {
+            scoreboard.put(account, scoreboard.get(account) + 1);
+        }
 
-            if (player != null) {
-                scoreboard.put(account, scoreboard.get(account) + 1);
-            }
+        System.out.println("passed");
 
-            for(HashMap.Entry<byte[], Ghost> entry : ghosts.entrySet()) {
-                byte[] account = entry.getKey();
-                scoreboard.put(account, scoreboard.get(account) + 1);
-            }
-        } else {
-            passed--;
+        for(HashMap.Entry<String, Ghost> entry : ghosts.entrySet()) {
+            String account = entry.getKey();
+            scoreboard.put(account, scoreboard.get(account) + 1);
         }
     }
 
@@ -67,7 +61,7 @@ public class Instance extends World implements Communication {
 
         switch (avatar) {
             case 1:
-                player = new PlayerAdrian(account, controller, scoreboard, ghosts);
+                player = new PlayerRoman(account, controller, scoreboard, ghosts);
                 break;
             case 2:
                 player = new PlayerAlex(account, controller, scoreboard, ghosts);
@@ -88,7 +82,7 @@ public class Instance extends World implements Communication {
                 player = new PlayerMarcus(account, controller, scoreboard, ghosts);
                 break;
             case 8:
-                player = new PlayerRoman(account, controller, scoreboard, ghosts);
+                player = new PlayerKilian(account, controller, scoreboard, ghosts);
                 break;
             case 9:
                 player = new PlayerSimon(account, controller, scoreboard, ghosts);
@@ -102,10 +96,10 @@ public class Instance extends World implements Communication {
         addObject(player, 250, 375);
     }
 
-    public Ghost ghostCharacter(Byte avatar, byte[] account) {
+    public Ghost ghostCharacter(Byte avatar, String account) {
         switch (avatar) {
             case 1:
-                return new GhostAdrian(account, controller, scoreboard, ghosts);
+                return new GhostRoman(account, controller, scoreboard, ghosts);
             case 2:
                 return new GhostAlex(account, controller, scoreboard, ghosts);
             case 3:
@@ -119,7 +113,7 @@ public class Instance extends World implements Communication {
             case 7:
                 return new GhostMarcus(account, controller, scoreboard, ghosts);
             case 8:
-                return new GhostRoman(account, controller, scoreboard, ghosts);
+                return new GhostKilian(account, controller, scoreboard, ghosts);
             case 9:
                 return new GhostSimon(account, controller, scoreboard, ghosts);
             case 0:
@@ -134,7 +128,7 @@ public class Instance extends World implements Communication {
     }
 
     @Override
-    public void onAuthenticationRegistered(byte[] account) {
+    public void onAuthenticationRegistered(String account) {
         this.account = account;
         users.put(account, username);
         scoreboard.put(account, 0);
@@ -153,24 +147,23 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionStart() {
         game = true;
-        passed = 50;
     }
 
     @Override
-    public void onSessionReady(byte[] account) {
+    public void onSessionReady(String account) {
 
     }
 
     @Override
-    public void onSessionUnReady(byte[] account) {
+    public void onSessionUnReady(String account) {
         if (ghosts.size() == 0 && player == null) {
             /* Game Finished */
         }
     }
 
     @Override
-    public void onSessionUserJoined(byte[] account, String username) {
-        if (this.account != account) {
+    public void onSessionUserJoined(String account, String username) {
+        if (!Objects.equals(this.account, account)) {
             Ghost ghost = ghostCharacter((byte) 0, account);
             addObject(ghost, 250, 375);
 
@@ -181,7 +174,7 @@ public class Instance extends World implements Communication {
     }
 
     @Override
-    public void onSessionUserLeft(byte[] account) {
+    public void onSessionUserLeft(String account) {
         Ghost ghost = ghosts.get(account);
         ghost.die();
         scoreboard.remove(account);
@@ -189,14 +182,14 @@ public class Instance extends World implements Communication {
     }
 
     @Override
-    public void onSessionPositionUpdate(byte[] account, int positionY) {
-        if (this.account != account) {
+    public void onSessionPositionUpdate(String account, int positionY) {
+        if (!Objects.equals(this.account, account)) {
             ghosts.get(account).updatePosition(positionY);
         }
     }
 
     @Override
-    public void onSessionAvatarUpdate(byte[] account, Byte avatar) {
+    public void onSessionAvatarUpdate(String account, Byte avatar) {
         if (ghosts.containsKey(account)) {
             ghosts.get(account).die();
         }
@@ -208,48 +201,48 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionObstacle(int position) {
-        int winkel = 180;
-        int speed = 2;
+        position += 150;
+        int posX = 1000;
 
-        if (position > 400) {
-            int posY1 = position - 200;
-            int posX1 = 1000;
-            int posY2 = position + 300;
-            int posX2 = 1000;
-            addObject(new TubeLong(winkel, speed), posX1, posY1);
-            addObject(new TubeShort(winkel, speed), posX2, posY2);
+        if(position >= 525)
+        {
+            int posY1 = position - 350;
+            int posY2 = position + 149;
+
+            addObject(new TubeLong(true),posX,posY1);
+            addObject(new TubeShort(false),posX,posY2);
         }
-        if (250 < position && position < 400) {
-            int posY1 = position - 250;
-            int posX1 = 1000;
+        if(400 <= position && position < 525)
+        {
+            int posY1 = position - 350;
+            int posY2 = position + 225;
+
+            addObject(new TubeLong(true),posX,posY1);
+            addObject(new TubeMedium(false),posX,posY2);
+        }
+        if(350 < position && position < 400)
+        {
+            int posY1 = position - 349;
+            int posY2 = position + 349;
+
+            addObject(new TubeLong(true),posX,posY1);
+            addObject(new TubeLong(false),posX,posY2);
+        }
+        if(225 < position && position <= 350)
+        {
+            int posY1 = position - 225;
             int posY2 = position + 350;
-            int posX2 = 1000;
-            addObject(new TubeLong(winkel, speed), posX1, posY1);
-            addObject(new TubeMedium(winkel, speed), posX2, posY2);
+
+            addObject(new TubeMedium(true),posX,posY1);
+            addObject(new TubeLong(false),posX,posY2);
         }
-        if (200 < position && position < 250) {
-            int posY1 = position - 200;
-            int posX1 = 1000;
-            int posY2 = position + 500;
-            int posX2 = 1000;
-            addObject(new TubeLong(winkel, speed), posX1, posY1);
-            addObject(new TubeLong(winkel, speed), posX2, posY2);
-        }
-        if (50 < position && position < 200) {
-            int posY1 = position - 50;
-            int posX1 = 1000;
-            int posY2 = position + 550;
-            int posX2 = 1000;
-            addObject(new TubeMedium(winkel, speed), posX1, posY1);
-            addObject(new TubeLong(winkel, speed), posX2, posY2);
-        }
-        if (50 > position) {
-            int posY1 = position;
-            int posX1 = 1000;
-            int posY2 = position + 500;
-            int posX2 = 1000;
-            addObject(new TubeShort(winkel, speed), posX1, posY1);
-            addObject(new TubeLong(winkel, speed), posX2, posY2);
+        if(position <= 225)
+        {
+            int posY1 = position - 149;
+            int posY2 = position + 350;
+
+            addObject(new TubeShort(true),posX,posY1);
+            addObject(new TubeLong(false),posX,posY2);
         }
     }
 }

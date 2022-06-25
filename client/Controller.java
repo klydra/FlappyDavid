@@ -2,6 +2,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +25,7 @@ public class Controller {
         try {
             webSocket = client.newWebSocketBuilder().buildAsync(URI.create(uri), listener).get();
         } catch (InterruptedException | ExecutionException e) {
+            System.out.println("Could not connect to server.");
             System.exit(0);
         }
 
@@ -104,12 +106,13 @@ class Communications {
         }
 
         public void publish(int positionY) {
-            ByteBuffer message = ByteBuffer.allocate(2 + Controller.LENGTH_POSITION);
+            int offset = (int) Math.ceil((float) positionY / 255);
+            ByteBuffer message = ByteBuffer.allocate(2 + offset);
 
             message.put(TYPE_SESSION);
             message.put(OP_UPDATE);
-            message.put((byte) positionY);
 
+            message.put(2 + offset - 1, (byte) (positionY - (255 * offset - 1)));
             webSocket.sendBinary(message.rewind(), true);
         }
 
@@ -141,6 +144,7 @@ class ControllerConnection implements WebSocket.Listener {
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+        System.out.println("Connection closed.");
         System.exit(0);
         return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
     }
@@ -158,13 +162,13 @@ class ControllerConnection implements WebSocket.Listener {
 
         if (action[0] == Communications.TYPE_AUXILIARY) {
             if (action[1] == communications.auxiliary.OP_MESSAGE) {
-                world.onAuxiliaryMessage(ByteBuffer.wrap(getContent(action)).rewind().toString());
+                world.onAuxiliaryMessage(new String(getContent(action), StandardCharsets.UTF_8));
             }
         }
 
         else if (action[0] == Communications.TYPE_AUTHENTICATION) {
             if (action[1] == communications.authentication.OP_REGISTER) {
-                world.onAuthenticationRegistered(getContent(action));
+                world.onAuthenticationRegistered(new String(getContent(action), StandardCharsets.UTF_8));
             }
 
             if (action[1] == communications.authentication.OP_TAKEN) {
@@ -191,7 +195,7 @@ class ControllerConnection implements WebSocket.Listener {
 
             else if (action[1] == communications.session.OP_JOINED) {
                 byte[] content = getContent(action);
-                world.onSessionUserJoined(getAccount(content), ByteBuffer.wrap(getAccountPayload(content)).rewind().toString());
+                world.onSessionUserJoined(getAccount(content), new String(getAccountPayload(content), StandardCharsets.UTF_8));
             }
 
             else if (action[1] == communications.session.OP_LEAVE) {
@@ -200,7 +204,14 @@ class ControllerConnection implements WebSocket.Listener {
 
             else if (action[1] == communications.session.OP_UPDATE) {
                 byte[] content = getContent(action);
-                world.onSessionPositionUpdate(getAccount(content), ByteBuffer.wrap(getAccountPayload(content)).rewind().getInt());
+                byte[] payload = getAccountPayload(content);
+
+                int value = (payload.length - 1) * 255;
+                value += payload[payload.length - 1] & 0xFF;
+
+                System.out.println(value);
+
+                world.onSessionPositionUpdate(getAccount(content), value);
             }
 
             else if (action[1] == communications.session.OP_AVATAR) {
@@ -209,11 +220,11 @@ class ControllerConnection implements WebSocket.Listener {
             }
 
             else if (action[1] == communications.session.OP_OBSTACLE) {
-                int value = 0;
+                byte[] content = getContent(action);
+                int value = (content.length - 1) * 255;
+                value += content[content.length - 1] & 0xFF;
 
-                for (byte element : getContent(action)) {
-                    value += Byte.toUnsignedInt(element);
-                }
+                System.out.println(value);
 
                 world.onSessionObstacle(value);
             }
@@ -226,8 +237,8 @@ class ControllerConnection implements WebSocket.Listener {
         return Arrays.copyOfRange(action, 2, action.length);
     }
 
-    byte[] getAccount(byte[] content) {
-        return Arrays.copyOfRange(content, 0, Controller.LENGTH_ACCOUNT);
+    String getAccount(byte[] content) {
+        return new String(Arrays.copyOfRange(content, 0, Controller.LENGTH_ACCOUNT), StandardCharsets.UTF_8);
     }
 
     byte[] getAccountPayload(byte[] content) {

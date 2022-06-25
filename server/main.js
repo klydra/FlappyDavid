@@ -99,15 +99,15 @@ wsServer.on("connection", (socket) => {
             accounts_ready.set(account, false);
             accounts_avatar.set(account, Buffer.alloc(0));
 
+            socket.send(Buffer.concat([header(TYPE_AUTHENTICATION, OP_REGISTER), account]));
+
+            console.log("REGISTERED : " + username);
+
             broadcast(
               TYPE_SESSION,
               OP_JOINED,
               Buffer.concat([account, Buffer.from(username)])
             );
-
-            socket.send(Buffer.concat([header(TYPE_AUTHENTICATION, OP_REGISTER), account]));
-
-            console.log("REGISTERED : " + username);
             return;
 
           case OP_UNREGISTER:
@@ -187,24 +187,24 @@ wsServer.on("connection", (socket) => {
             return;
 
           case OP_UPDATE:
+            let content = getContent(message)
+
             broadcast(
               TYPE_SESSION,
               OP_UPDATE,
-              Buffer.concat([connections_accounts.get(socket), getContent(message)])
+              Buffer.concat([connections_accounts.get(socket), content])
             );
-
-            console.log("UPDATE : " + accounts_users.get(connections_accounts.get(socket)));
             return;
 
           case OP_AVATAR:
             let account__ = connections_accounts.get(socket);
-            let content = getContent(message);
+            let content_ = getContent(message);
             broadcast(
               TYPE_SESSION,
               OP_UPDATE,
-              Buffer.concat([account__, content])
+              Buffer.concat([account__, content_])
             );
-            accounts_avatar.set(account__, content);
+            accounts_avatar.set(account__, content_);
 
             console.log("AVATAR : " + accounts_users.get(account__));
             return;
@@ -239,18 +239,11 @@ function broadcast(type, operation, content) {
 
 function pipes(type, operation, possibilities, delay) {
   if (game) {
-    let value = Math.floor(Math.random() * possibilities)
+    let value = Math.floor(Math.random() * possibilities - 1) + 1
 
-    let buffer = Buffer.alloc(Math.ceil(value / 255));
-    let offset = 0;
-
-    while (value >= 255) {
-      buffer.writeUInt8(255, offset);
-      offset++;
-      value -= 255;
-    }
-
-    buffer.writeUInt8(value, offset);
+    let offset = Math.ceil(value / 255)
+    let buffer = Buffer.alloc(offset);
+    buffer.writeUInt8(value % 255, offset - 1);
 
     broadcast(type, operation, buffer);
 

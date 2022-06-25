@@ -8,7 +8,7 @@ public class Player extends Character {
     int actTime = 0;
     int gravity = 0;
 
-    public Player(byte[] account, Controller controller, HashMap<byte[], Integer> scoreboard, HashMap<byte[], Ghost> ghosts) {
+    public Player(String account, Controller controller, HashMap<String, Integer> scoreboard, HashMap<String, Ghost> ghosts) {
         super(account, controller, scoreboard, ghosts);
     }
 
@@ -37,12 +37,27 @@ public class Player extends Character {
 
         controller.communications.session.publish(getY());
 
+        checkCollision();
+
         super.act();
+    }
+
+    public void checkCollision() {
+        TubeLong tubeLong = (TubeLong)getOneIntersectingObject(TubeLong.class);
+        TubeMedium tubeMedium = (TubeMedium)getOneIntersectingObject(TubeMedium.class);
+        TubeShort tubeShort = (TubeShort)getOneIntersectingObject(TubeShort.class);
+        boolean atFrame = getY() < 50 || getY() > 700;
+
+
+        if (tubeLong != null || tubeMedium != null || tubeShort != null || atFrame)
+        {
+            die();
+        }
     }
 
     @Override
     public void die() {
-        controller.communications.session.unready();
+        //controller.communications.session.unready();
         super.die();
     }
 }

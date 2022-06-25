@@ -1,16 +1,16 @@
 public interface Communication {
     void onAuxiliaryMessage(String message);
 
-    void onAuthenticationRegistered(byte[] account);
+    void onAuthenticationRegistered(String account);
     void onAuthenticationTaken();
     void onAuthenticationUnregistered();
 
     void onSessionStart();
-    void onSessionReady(byte[] account);
-    void onSessionUnReady(byte[] account);
-    void onSessionUserJoined(byte[] account, String username);
-    void onSessionUserLeft(byte[] account);
-    void onSessionPositionUpdate(byte[] account, int positionY);
-    void onSessionAvatarUpdate(byte[] account, Byte avatar);
+    void onSessionReady(String account);
+    void onSessionUnReady(String account);
+    void onSessionUserJoined(String account, String username);
+    void onSessionUserLeft(String account);
+    void onSessionPositionUpdate(String account, int positionY);
+    void onSessionAvatarUpdate(String account, Byte avatar);
     void onSessionObstacle(int position);
 }

@@ -1,21 +1,8 @@
 import greenfoot.*;
 
-public class TubeShort extends Actor
+public class TubeShort extends Tube
 {
-    int speed = 0;
-
-    public TubeShort (int winkel, int speed)
-    {
-        this.speed=speed;
-        setRotation(winkel);
-    }
-
-    public void act() 
-    {
-        move(speed);
-        if(isAtEdge())
-        {
-            getWorld().removeObject(this);
-        }
+    public TubeShort(boolean tracking) {
+        super(tracking);
     }
 }

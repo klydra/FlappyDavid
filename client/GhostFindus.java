@@ -1,7 +1,7 @@
 import java.util.HashMap;
 
 public class GhostFindus extends Ghost {
-    public GhostFindus(byte[] account, Controller controller, HashMap<byte[], Integer> scoreboard, HashMap<byte[], Ghost> ghosts) {
+    public GhostFindus(String account, Controller controller, HashMap<String, Integer> scoreboard, HashMap<String, Ghost> ghosts) {
         super(account, controller, scoreboard, ghosts);
     }
 }
