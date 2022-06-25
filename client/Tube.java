@@ -21,7 +21,11 @@ public class Tube extends Actor {
         }
         if(isAtEdge())
         {
-            getWorld().removeObject(this);
+            destroy();
         }
+    }
+
+    public void destroy() {
+        getWorld().removeObject(this);
     }
 }

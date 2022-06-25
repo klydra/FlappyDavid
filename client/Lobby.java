@@ -12,8 +12,8 @@ public class Lobby extends World {
 
     ButtonReady ready;
 
-    public HashMap<String, ButtonAvatar> entries = new HashMap<String, ButtonAvatar>();
-    public ArrayList<String> order = new ArrayList<String>();
+    public HashMap<String, ButtonAvatar> entries = new HashMap<>();
+    public ArrayList<String> order = new ArrayList<>();
 
     int avatarCount = 9;
     boolean keyPress = false;
@@ -32,7 +32,9 @@ public class Lobby extends World {
         ready.ready(false);
         addObject(ready, 500, 650);
 
-        entry(instance.account);
+        if (instance.account != null) {
+            entry(instance.account);
+        }
     }
 
     @Override

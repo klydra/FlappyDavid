@@ -3,12 +3,14 @@ import greenfoot.*;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class Instance extends World implements Communication {
     public Lobby lobby;
     public Controller controller;
     public Frame frame;
+    public ArrayList<Tube> tubes = new ArrayList<>();
 
     public String account;
     String username;
@@ -81,10 +83,16 @@ public class Instance extends World implements Communication {
     public void onSessionStart() {
         game = true;
         lobby.start();
+
         player = new Player(account, controller, scoreboard, ghosts);
         player.avatar(avatars.get(account));
         addObject(player, 250, 375);
+
         lobby.order = new ArrayList<>();
+
+        for (HashMap.Entry<String, Integer> score : scoreboard.entrySet()) {
+            score.setValue(0);
+        }
     }
 
     @Override
@@ -115,7 +123,31 @@ public class Instance extends World implements Communication {
                     lobby.entry(lobby.order.get(i));
                 }
 
+                List<TubeLong> tubeLongs = getObjects(TubeLong.class);
+                removeObjects(tubeLongs);
+
+                List<TubeMedium> tubeMediums = getObjects(TubeMedium.class);
+                removeObjects(tubeMediums);
+
+                List<TubeShort> tubeShorts = getObjects(TubeShort.class);
+                removeObjects(tubeShorts);
+
+                for (HashMap.Entry<String, String> user : users.entrySet()) {
+                    if (Objects.equals(this.account, user.getKey())) {
+                        continue;
+                    }
+
+                    Ghost ghost = new Ghost(user.getKey(), controller, scoreboard, ghosts);
+                    ghost.avatar(avatars.get(user.getKey()));
+                    addObject(ghost, 250, 375);
+                    ghosts.put(user.getKey(), ghost);
+                }
+
+                System.out.println("e");
+
                 lobby.ready.ready(false);
+
+                System.out.println("e");
 
                 Greenfoot.setWorld(lobby);
             }
@@ -167,7 +199,13 @@ public class Instance extends World implements Communication {
         lobby.entry(account);
 
         if (!Objects.equals(this.account, account)) {
-            ghosts.get(account).avatar(avatar);
+            if (avatars.containsKey(account)) {
+                ghosts.get(account).avatar(avatar);
+            }
+        } else {
+            if (player != null) {
+                player.avatar(avatar);
+            }
         }
     }
 
