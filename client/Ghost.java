@@ -48,26 +48,36 @@ public class Ghost extends Character {
     public void avatar(int avatar) {
         switch (avatar) {
             case 1:
-                setImage("characters/ghost/roman.png");
+                setImage(new GreenfootImage("images/characters/ghost/roman.png"));
+                break;
             case 2:
-                setImage("characters/ghost/alex.png");
+                setImage(new GreenfootImage("images/characters/ghost/alex.png"));
+                break;
             case 3:
-                setImage("characters/ghost/david.png");
+                setImage(new GreenfootImage("images/characters/ghost/david.png"));
+                break;
             case 4:
-                setImage("characters/ghost/dino.png");
+                setImage(new GreenfootImage("images/characters/ghost/dino.png"));
+                break;
             case 5:
-                setImage("characters/ghost/ely.png");
+                setImage(new GreenfootImage("images/characters/ghost/ely.png"));
+                break;
             case 6:
-                setImage("characters/ghost/justin.png");
+                setImage(new GreenfootImage("images/characters/ghost/justin.png"));
+                break;
             case 7:
-                setImage("characters/ghost/marcus.png");
+                setImage(new GreenfootImage("images/characters/ghost/marcus.png"));
+                break;
             case 8:
-                setImage("characters/ghost/kilian.png");
+                setImage(new GreenfootImage("images/characters/ghost/kilian.png"));
+                break;
             case 9:
-                setImage("characters/ghost/kilian.png");
+                setImage(new GreenfootImage("images/characters/ghost/simon.png"));
+                break;
             case 0:
             default:
-                setImage("characters/ghost/findus.png");
+                setImage(new GreenfootImage("images/characters/ghost/findus.png"));
+                break;
         }
     }
 

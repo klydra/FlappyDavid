@@ -78,26 +78,10 @@ wsServer.on("connection", (socket) => {
               return;
             }
 
-            accounts_users.forEach((value, key) => {
-              socket.send(
-                Buffer.concat([
-                  header(TYPE_SESSION, OP_JOINED),
-                  key,
-                  Buffer.from(value),
-                ])
-              );
-            });
-
-            accounts_avatar.forEach((value, key) => {
-              socket.send(
-                Buffer.concat([header(TYPE_SESSION, OP_AVATAR), key, value])
-              );
-            });
-
             connections_accounts.set(socket, account);
             accounts_users.set(account, username);
             accounts_ready.set(account, false);
-            accounts_avatar.set(account, Buffer.alloc(0));
+            accounts_avatar.set(account, Buffer.alloc(4));
 
             socket.send(Buffer.concat([header(TYPE_AUTHENTICATION, OP_REGISTER), account]));
 
@@ -108,6 +92,22 @@ wsServer.on("connection", (socket) => {
               OP_JOINED,
               Buffer.concat([account, Buffer.from(username)])
             );
+
+            accounts_users.forEach((value, key) => {
+              socket.send(
+                  Buffer.concat([
+                    header(TYPE_SESSION, OP_JOINED),
+                    key,
+                    Buffer.from(value),
+                  ])
+              );
+            });
+
+            accounts_avatar.forEach((value, key) => {
+              socket.send(
+                  Buffer.concat([header(TYPE_SESSION, OP_AVATAR), key, value])
+              );
+            });
             return;
 
           case OP_UNREGISTER:

@@ -34,8 +34,7 @@ public class Instance extends World implements Communication {
     }
 
     void register() {
-        // TODO : username = JOptionPane.showInputDialog("Enter your Username");
-        username = "klydra";
+        username = JOptionPane.showInputDialog("Enter your Username");
         controller.communications.authentication.register(username);
     }
 
@@ -155,6 +154,7 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionAvatarUpdate(String account, int avatar) {
         avatars.put(account, avatar);
+        lobby.entry(account);
     }
 
     @Override

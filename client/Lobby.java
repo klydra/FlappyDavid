@@ -15,7 +15,7 @@ public class Lobby extends World {
     public HashMap<String, ButtonAvatar> entries = new HashMap<String, ButtonAvatar>();
     public ArrayList<String> order = new ArrayList<String>();
 
-    int avatarCount = 10;
+    int avatarCount = 9;
     boolean keyPress = false;
 
     public Lobby() {
@@ -58,8 +58,8 @@ public class Lobby extends World {
             keyPress = true;
             int currentAvatar = instance.avatars.get(instance.account);
             if (currentAvatar + 1 <= avatarCount) {
-                controller.communications.session.avatar(currentAvatar + 1);
-                entry(instance.account);
+                int newAvatar = currentAvatar + 1;
+                controller.communications.session.avatar(newAvatar);
             }
         }
 
@@ -67,8 +67,8 @@ public class Lobby extends World {
             keyPress = true;
             int currentAvatar = instance.avatars.get(instance.account);
             if (currentAvatar - 1 >= 0) {
-                controller.communications.session.avatar(currentAvatar - 1);
-                entry(instance.account);
+                int newAvatar = currentAvatar - 1;
+                controller.communications.session.avatar(newAvatar);
             }
         }
 
@@ -104,8 +104,7 @@ public class Lobby extends World {
             entries.get(account).destroy();
         }
 
-        ButtonAvatar avatar = new ButtonAvatar();
-        avatar.avatar(instance.avatars.get(account));
+        ButtonAvatar avatar = new ButtonAvatar(instance.avatars.get(account));
 
         entries.put(account, avatar);
         addObject(avatar, x, y);

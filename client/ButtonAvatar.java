@@ -1,32 +1,44 @@
-public class ButtonAvatar extends Button {
-    ButtonText username;
-    ButtonText score;
+import greenfoot.GreenfootImage;
 
-    public void avatar(int avatar) {
+public class ButtonAvatar extends Button {
+    public ButtonAvatar(int avatar) {
         switch (avatar) {
             case 1:
-                setImage("characters/player/roman.png");
+                setImage(new GreenfootImage("images/characters/player/roman.png"));
+                break;
             case 2:
-                setImage("characters/player/alex.png");
+                setImage(new GreenfootImage("images/characters/player/alex.png"));
+                break;
             case 3:
-                setImage("characters/player/david.png");
+                setImage(new GreenfootImage("images/characters/player/david.png"));
+                break;
             case 4:
-                setImage("characters/player/dino.png");
+                setImage(new GreenfootImage("images/characters/player/dino.png"));
+                break;
             case 5:
-                setImage("characters/player/ely.png");
+                setImage(new GreenfootImage("images/characters/player/ely.png"));
+                break;
             case 6:
-                setImage("characters/player/justin.png");
+                setImage(new GreenfootImage("images/characters/player/justin.png"));
+                break;
             case 7:
-                setImage("characters/player/marcus.png");
+                setImage(new GreenfootImage("images/characters/player/marcus.png"));
+                break;
             case 8:
-                setImage("characters/player/kilian.png");
+                setImage(new GreenfootImage("images/characters/player/kilian.png"));
+                break;
             case 9:
-                setImage("characters/player/kilian.png");
+                setImage(new GreenfootImage("images/characters/player/simon.png"));
+                break;
             case 0:
             default:
-                setImage("characters/player/findus.png");
+                setImage(new GreenfootImage("images/characters/player/findus.png"));
+                break;
         }
     }
+
+    ButtonText username;
+    ButtonText score;
 
     public void description(String username, String score) {
         if (this.username != null) {
