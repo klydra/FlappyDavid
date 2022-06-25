@@ -17,10 +17,6 @@ public class Character extends Actor
         this.scoreboard = scoreboard;
         this.ghosts = ghosts;
     }
-    public void act() 
-    {
-
-    }
 
     public void die() {
         getWorld().removeObject(this);

@@ -153,6 +153,11 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionUnReady(String account) {
+        if (!Objects.equals(this.account, account)) {
+            ghosts.get(account).die();
+        }
+
+
         if (ghosts.size() == 0 && player == null) {
             System.out.println("done");
         }

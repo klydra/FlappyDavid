@@ -237,17 +237,13 @@ function broadcast(type, operation, content) {
   });
 }
 
-let value = 450;
-
 function pipes(type, operation, possibilities, delay) {
   if (game) {
-    //let value = Math.floor(Math.random() * possibilities - 1) + 1
+    let value = Math.floor(Math.random() * possibilities - 1) + 1
 
     let offset = Math.ceil(value / 255)
     let buffer = Buffer.alloc(offset);
     buffer.writeUInt8(value % 256, offset - 1);
-
-    value--;
 
     broadcast(type, operation, buffer);
 
