@@ -1,9 +1,11 @@
 import greenfoot.*;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Objects;
 
 public class Instance extends World implements Communication {
+    public Lobby lobby;
     public Controller controller;
     public Frame frame;
 
@@ -16,18 +18,21 @@ public class Instance extends World implements Communication {
     public HashMap<String, String> users = new HashMap<>();
     public HashMap<String, Ghost> ghosts = new HashMap<>();
 
-    public Instance() {
+    public Instance(Lobby lobby, String uri) {
         super(1000, 750, 1);
 
-        controller = new Controller(this, "ws://localhost:80");
+        this.lobby = lobby;
+        this.controller = new Controller(lobby, this, uri);
+
+        register();
 
         frame = new Frame();
         addObject(frame, 500, 375);
+    }
 
-        changeCharacter(character);
-
-        username = "klydra";
-        controller.communications.authentication.register("klydra");
+    void register() {
+        username = JOptionPane.showInputDialog("Enter your Username");
+        controller.communications.authentication.register(username);
     }
 
     public void act() {
@@ -35,7 +40,6 @@ public class Instance extends World implements Communication {
 
     @Override
     public void started() {
-        controller.communications.session.ready();
         super.started();
     }
 
@@ -43,8 +47,6 @@ public class Instance extends World implements Communication {
         if (player != null) {
             scoreboard.put(account, scoreboard.get(account) + 1);
         }
-
-        System.out.println("passed");
 
         for(HashMap.Entry<String, Ghost> entry : ghosts.entrySet()) {
             String account = entry.getKey();
@@ -130,11 +132,14 @@ public class Instance extends World implements Communication {
         this.account = account;
         users.put(account, username);
         scoreboard.put(account, 0);
+        JOptionPane.showMessageDialog(null, "Joined Server.");
     }
 
     @Override
     public void onAuthenticationTaken() {
-
+        JOptionPane.showMessageDialog(null, "Username already taken");
+        username = "";
+        register();
     }
 
     @Override
@@ -156,7 +161,6 @@ public class Instance extends World implements Communication {
         if (!Objects.equals(this.account, account)) {
             ghosts.get(account).die();
         }
-
 
         if (ghosts.size() == 0 && player == null) {
             System.out.println("done");

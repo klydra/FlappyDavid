@@ -1,3 +1,6 @@
+import greenfoot.Greenfoot;
+
+import javax.swing.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -11,22 +14,24 @@ public class Controller {
     public static final int LENGTH_ACCOUNT = 36; /* Account ID byte array length */
     public static final int LENGTH_POSITION = (new byte[] {((Integer) /* | */ 450 /* | */ ).byteValue()}).length; /* Maximum Position length */
 
+    Lobby lobby;
     Instance world;
     public Communications communications = new Communications();
     WebSocket.Listener listener;
     HttpClient client;
     WebSocket webSocket;
 
-    public Controller(Instance background, String uri) {
-        world = background;
+    public Controller(Lobby lobby, Instance background, String uri) {
+        this.lobby = lobby;
+        this.world = background;
         listener = new ControllerConnection(world, communications);
         client = HttpClient.newHttpClient();
 
         try {
             webSocket = client.newWebSocketBuilder().buildAsync(URI.create(uri), listener).get();
         } catch (InterruptedException | ExecutionException e) {
-            System.out.println("Could not connect to server.");
-            System.exit(0);
+            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            lobby.connect();
         }
 
         communications.setWebSocket(webSocket);
@@ -139,13 +144,14 @@ class ControllerConnection implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
+        JOptionPane.showMessageDialog(null, "Connected.");
         WebSocket.Listener.super.onOpen(webSocket);
     }
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        System.out.println("Connection closed.");
-        System.exit(0);
+        JOptionPane.showMessageDialog(null, "Connection closed.");
+        Greenfoot.setWorld(new Lobby());
         return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
     }
 
