@@ -204,7 +204,13 @@ class ControllerConnection implements WebSocket.Listener {
             }
 
             else if (action[1] == communications.session.OP_OBSTACLE) {
-                world.onSessionObstacle(ByteBuffer.wrap(getContent(action)).rewind().getInt());
+                int value = 0;
+
+                for (byte element : getContent(action)) {
+                    value += Byte.toUnsignedInt(element);
+                }
+
+                world.onSessionObstacle(value);
             }
         }
 
@@ -212,14 +218,14 @@ class ControllerConnection implements WebSocket.Listener {
     }
 
     byte[] getContent(byte[] action) {
-        return Arrays.copyOfRange(action, 2, action.length - 1);
+        return Arrays.copyOfRange(action, 2, action.length);
     }
 
     byte[] getAccount(byte[] content) {
-        return Arrays.copyOfRange(content, 0, Controller.LENGTH_ACCOUNT - 1);
+        return Arrays.copyOfRange(content, 0, Controller.LENGTH_ACCOUNT);
     }
 
     byte[] getAccountPayload(byte[] content) {
-        return Arrays.copyOfRange(content, Controller.LENGTH_ACCOUNT, content.length - 1);
+        return Arrays.copyOfRange(content, Controller.LENGTH_ACCOUNT, content.length);
     }
 }

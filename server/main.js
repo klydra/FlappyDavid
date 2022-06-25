@@ -25,7 +25,7 @@ wsServer.on("connection", (socket) => {
 
   const LENGTH_ACCOUNT = 36;
   const LENGTH_POSITION = 450;
-  const LENGTH_DELAY = 2500;
+  const LENGTH_DELAY = 2000;
 
   const TYPE_AUXILIARY = 1;
   const TYPE_AUTHENTICATION = 2;
@@ -241,10 +241,21 @@ function pipes(type, operation, possibilities, delay) {
   if (game) {
     let value = Math.floor(Math.random() * possibilities)
 
-    let buffer = Buffer.alloc(5);
-    buffer.writeUInt16LE(value);
+    let buffer = Buffer.alloc(Math.ceil(value / 255));
+    let offset = 0;
+
+    while (value >= 255) {
+      buffer.writeUInt8(255, offset);
+      offset++;
+      value -= 255;
+    }
+
+    buffer.writeUInt8(value, offset);
 
     broadcast(type, operation, buffer);
+
+    console.log("OBSTACLE : " + value);
+
     setTimeout(() => pipes(type, operation, possibilities, delay), delay);
   }
 }
