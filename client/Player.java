@@ -15,23 +15,29 @@ public class Player extends Character {
     @Override
     public void act() {
         actTime++;
-
-        if (Greenfoot.isKeyDown("space")) {
-            if (actTime > delay) {
-                gravity = 8;
+        if (Greenfoot.isKeyDown("space"))
+        {
+            if(actTime>delay)
+            {
+                gravity = 10;
                 actTime = 0;
             }
         }
 
-        setLocation(getX(), getY() - gravity);
+        setLocation(getX(),getY() - gravity);
 
-        if (gravity > -3) {
+        if (gravity > -7)
+        {
             setRotation(-30);
-        } else if (getRotation() != 90) {
+        }
+
+        else if (getRotation()!=90)
+        {
             turn(5);
         }
 
-        if (gravity > -3 && gdelay < actTime) {
+        if (gravity > -7 && gdelay < actTime)
+        {
             gravity--;
         }
 
@@ -57,7 +63,7 @@ public class Player extends Character {
 
     @Override
     public void die() {
-        //controller.communications.session.unready();
+        controller.communications.session.unready();
         super.die();
     }
 }

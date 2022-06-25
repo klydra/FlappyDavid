@@ -3,8 +3,34 @@ import greenfoot.*;
 import java.util.HashMap;
 
 public class Ghost extends Character {
+    int gdelay = 2;
+    int actTime = 0;
+    int gravity = 0;
+
     public Ghost(String account, Controller controller, HashMap<String, Integer> scoreboard, HashMap<String, Ghost> ghosts) {
         super(account, controller, scoreboard, ghosts);
+    }
+
+    @Override
+    public void act() {
+        actTime++;
+
+        if (gravity > -7)
+        {
+            setRotation(-30);
+        }
+
+        else if (getRotation()!=90)
+        {
+            turn(5);
+        }
+
+        if (gravity > -7 && gdelay < actTime)
+        {
+            gravity--;
+        }
+
+        super.act();
     }
 
     public void updatePosition(int positionY) {
@@ -13,7 +39,7 @@ public class Ghost extends Character {
 
     @Override
     public void die() {
-        ghosts.remove(account);
         super.die();
+        ghosts.remove(account);
     }
 }

@@ -27,6 +27,7 @@ public class Instance extends World implements Communication {
         changeCharacter(character);
 
         username = "klydra";
+        controller.communications.authentication.register("klydra");
     }
 
     public void act() {
@@ -34,7 +35,6 @@ public class Instance extends World implements Communication {
 
     @Override
     public void started() {
-        controller.communications.authentication.register("klydra");
         controller.communications.session.ready();
         super.started();
     }
@@ -201,7 +201,7 @@ public class Instance extends World implements Communication {
         position += 150;
         int posX = 1000;
 
-        if(position >= 525)
+        if (position >= 524)
         {
             int posY1 = position - 350;
             int posY2 = position + 149;
@@ -209,7 +209,7 @@ public class Instance extends World implements Communication {
             addObject(new TubeLong(true),posX,posY1);
             addObject(new TubeShort(false),posX,posY2);
         }
-        if(400 <= position && position < 525)
+        if (400 <= position && position < 524)
         {
             int posY1 = position - 350;
             int posY2 = position + 225;
@@ -217,7 +217,7 @@ public class Instance extends World implements Communication {
             addObject(new TubeLong(true),posX,posY1);
             addObject(new TubeMedium(false),posX,posY2);
         }
-        if(350 < position && position < 400)
+        if (350 < position && position < 400)
         {
             int posY1 = position - 349;
             int posY2 = position + 349;
@@ -225,7 +225,7 @@ public class Instance extends World implements Communication {
             addObject(new TubeLong(true),posX,posY1);
             addObject(new TubeLong(false),posX,posY2);
         }
-        if(225 < position && position <= 350)
+        if (225 < position && position <= 350)
         {
             int posY1 = position - 225;
             int posY2 = position + 350;
@@ -233,7 +233,7 @@ public class Instance extends World implements Communication {
             addObject(new TubeMedium(true),posX,posY1);
             addObject(new TubeLong(false),posX,posY2);
         }
-        if(position <= 225)
+        if (position <= 225)
         {
             int posY1 = position - 149;
             int posY2 = position + 350;
