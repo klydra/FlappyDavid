@@ -28,13 +28,13 @@ public class David extends Actor
         {
             if(actTime>delay)
             {
-                gravity = 10;
+                gravity = 8;
                 actTime = 0;
             }
 
         }
         setLocation(getX(),getY() - gravity);
-        if(gravity > -7)
+        if (gravity > -3)
         {
             setRotation(-30);
         }
@@ -42,7 +42,7 @@ public class David extends Actor
         {
             turn(5);
         }
-        if(gravity > -7 && gdelay < actTime)
+        if(gravity > -3 && gdelay < actTime)
         {
             gravity--;
         }
