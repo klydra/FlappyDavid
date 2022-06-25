@@ -140,6 +140,12 @@ class ControllerConnection implements WebSocket.Listener {
     }
 
     @Override
+    public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+        System.exit(0);
+        return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
+    }
+
+    @Override
     public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer message, boolean last) {
         byte[] action = new byte[message.remaining()];
         message.get(action);
@@ -158,7 +164,7 @@ class ControllerConnection implements WebSocket.Listener {
 
         else if (action[0] == Communications.TYPE_AUTHENTICATION) {
             if (action[1] == communications.authentication.OP_REGISTER) {
-                world.onAuthenticationRegistered();
+                world.onAuthenticationRegistered(getContent(action));
             }
 
             if (action[1] == communications.authentication.OP_TAKEN) {

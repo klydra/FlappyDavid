@@ -26,9 +26,9 @@ public class Character extends Actor
         TubeLong tubeLong = (TubeLong)getOneIntersectingObject(TubeLong.class);
         TubeMedium tubeMedium = (TubeMedium)getOneIntersectingObject(TubeMedium.class);
         TubeShort tubeShort = (TubeShort)getOneIntersectingObject(TubeShort.class);
-        Frame frame = (Frame) getOneIntersectingObject(Frame.class);
+        //Frame frame = (Frame) getOneIntersectingObject(Frame.class);
 
-        if (tubeLong != null || tubeMedium != null || tubeShort != null || frame != null)
+        if (tubeLong != null || tubeMedium != null || tubeShort != null/* ||  frame != null */)
         {
             die();
         }

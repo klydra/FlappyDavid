@@ -8,7 +8,9 @@ public class Instance extends World implements Communication {
     public int passed;
     public Frame frame;
 
-    public byte[] account;
+    public byte[] account; // TODO : Pre-convert account to string
+    String username;
+
     public Byte character = 0;
     public Player player;
     public HashMap<byte[], Integer> scoreboard = new HashMap<>();
@@ -25,7 +27,7 @@ public class Instance extends World implements Communication {
 
         changeCharacter(character);
 
-        controller.communications.authentication.register("klydra");
+        username = "klydra";
     }
 
     public void act() {
@@ -34,12 +36,19 @@ public class Instance extends World implements Communication {
         }
     }
 
+    @Override
+    public void started() {
+        controller.communications.authentication.register("klydra");
+        controller.communications.session.ready();
+        super.started();
+    }
+
     public void addScore() {
         if (passed == 0) {
             passed = 20;
 
             if (player != null) {
-                scoreboard.put(player.account, scoreboard.get(player.account) + 1);
+                scoreboard.put(account, scoreboard.get(account) + 1);
             }
 
             for(HashMap.Entry<byte[], Ghost> entry : ghosts.entrySet()) {
@@ -93,14 +102,42 @@ public class Instance extends World implements Communication {
         addObject(player, 250, 375);
     }
 
+    public Ghost ghostCharacter(Byte avatar, byte[] account) {
+        switch (avatar) {
+            case 1:
+                return new GhostAdrian(account, controller, scoreboard, ghosts);
+            case 2:
+                return new GhostAlex(account, controller, scoreboard, ghosts);
+            case 3:
+                return new GhostDavid(account, controller, scoreboard, ghosts);
+            case 4:
+                return new GhostDino(account, controller, scoreboard, ghosts);
+            case 5:
+                return new GhostEly(account, controller, scoreboard, ghosts);
+            case 6:
+                return new GhostJustin(account, controller, scoreboard, ghosts);
+            case 7:
+                return new GhostMarcus(account, controller, scoreboard, ghosts);
+            case 8:
+                return new GhostRoman(account, controller, scoreboard, ghosts);
+            case 9:
+                return new GhostSimon(account, controller, scoreboard, ghosts);
+            case 0:
+            default:
+                return new GhostFindus(account, controller, scoreboard, ghosts);
+        }
+    }
+
     @Override
     public void onAuxiliaryMessage(String message) {
         System.out.println(message);
     }
 
     @Override
-    public void onAuthenticationRegistered() {
-        controller.communications.session.ready();
+    public void onAuthenticationRegistered(byte[] account) {
+        this.account = account;
+        users.put(account, username);
+        scoreboard.put(account, 0);
     }
 
     @Override
@@ -115,6 +152,7 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionStart() {
+        game = true;
         passed = 50;
     }
 
@@ -132,12 +170,14 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionUserJoined(byte[] account, String username) {
-        Ghost ghost = new Ghost(account, controller, scoreboard, ghosts);
-        addObject(ghost, 250, 375);
+        if (this.account != account) {
+            Ghost ghost = ghostCharacter((byte) 0, account);
+            addObject(ghost, 250, 375);
 
-        users.put(account, username);
-        scoreboard.put(account, 0);
-        ghosts.put(account, ghost);
+            users.put(account, username);
+            scoreboard.put(account, 0);
+            ghosts.put(account, ghost);
+        }
     }
 
     @Override
@@ -150,7 +190,9 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onSessionPositionUpdate(byte[] account, int positionY) {
-        ghosts.get(account).updatePosition(positionY);
+        if (this.account != account) {
+            ghosts.get(account).updatePosition(positionY);
+        }
     }
 
     @Override
@@ -159,52 +201,13 @@ public class Instance extends World implements Communication {
             ghosts.get(account).die();
         }
 
-        Ghost ghost;
-
-        switch (avatar) {
-            case 1:
-                ghost = new GhostAdrian(account, controller, scoreboard, ghosts);
-                break;
-            case 2:
-                ghost = new GhostAlex(account, controller, scoreboard, ghosts);
-                break;
-            case 3:
-                ghost = new GhostDavid(account, controller, scoreboard, ghosts);
-                break;
-            case 4:
-                ghost = new GhostDino(account, controller, scoreboard, ghosts);
-                break;
-            case 5:
-                ghost = new GhostEly(account, controller, scoreboard, ghosts);
-                break;
-            case 6:
-                ghost = new GhostJustin(account, controller, scoreboard, ghosts);
-                break;
-            case 7:
-                ghost = new GhostMarcus(account, controller, scoreboard, ghosts);
-                break;
-            case 8:
-                ghost = new GhostRoman(account, controller, scoreboard, ghosts);
-                break;
-            case 9:
-                ghost = new GhostSimon(account, controller, scoreboard, ghosts);
-                break;
-            case 0:
-            default:
-                ghost = new GhostFindus(account, controller, scoreboard, ghosts);
-                break;
-        }
-
+        Ghost ghost = ghostCharacter((byte) 0, account);
         ghosts.put(account, ghost);
         addObject(ghost, 250, 375);
     }
 
     @Override
     public void onSessionObstacle(int position) {
-        if (!game) {
-            return;
-        }
-
         int winkel = 180;
         int speed = 2;
 

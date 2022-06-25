@@ -105,7 +105,7 @@ wsServer.on("connection", (socket) => {
               Buffer.concat([account, Buffer.from(username)])
             );
 
-            socket.send(header(TYPE_AUTHENTICATION, OP_REGISTER));
+            socket.send(Buffer.concat([header(TYPE_AUTHENTICATION, OP_REGISTER), account]));
 
             console.log("REGISTERED : " + username);
             return;

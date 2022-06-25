@@ -1,7 +1,7 @@
 public interface Communication {
     void onAuxiliaryMessage(String message);
 
-    void onAuthenticationRegistered();
+    void onAuthenticationRegistered(byte[] account);
     void onAuthenticationTaken();
     void onAuthenticationUnregistered();
 

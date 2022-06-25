@@ -35,6 +35,8 @@ public class Player extends Character {
             gravity--;
         }
 
+        controller.communications.session.publish(getY());
+
         super.act();
     }
 
