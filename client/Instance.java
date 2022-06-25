@@ -11,12 +11,15 @@ public class Instance extends World implements Communication {
 
     public String account;
     String username;
+    boolean game;
 
     public Byte character = 0;
     public Player player;
     public HashMap<String, Integer> scoreboard = new HashMap<>();
+    public HashMap<String, Byte> avatars = new HashMap<>();
     public HashMap<String, String> users = new HashMap<>();
     public HashMap<String, Ghost> ghosts = new HashMap<>();
+    public HashMap<String, Boolean> readies = new HashMap<>();
 
     public Instance(Lobby lobby, String uri) {
         super(1000, 750, 1);
@@ -54,11 +57,7 @@ public class Instance extends World implements Communication {
         }
     }
 
-    public void changeCharacter(Byte avatar) {
-        if (player != null) {
-            player.die();
-        }
-
+    public Player player(Byte avatar) {
         switch (avatar) {
             case 1:
                 player = new PlayerRoman(account, controller, scoreboard, ghosts);
@@ -137,33 +136,42 @@ public class Instance extends World implements Communication {
 
     @Override
     public void onAuthenticationTaken() {
-        JOptionPane.showMessageDialog(null, "Username already taken");
+        JOptionPane.showMessageDialog(null, "Username already taken.");
         username = "";
         register();
     }
 
     @Override
     public void onAuthenticationUnregistered() {
-
+        JOptionPane.showMessageDialog(null, "Left server.");
+        username = "";
+        register();
     }
 
     @Override
     public void onSessionStart() {
+        game = true;
     }
 
     @Override
     public void onSessionReady(String account) {
-
+        readies.put(account, true);
     }
 
     @Override
     public void onSessionUnReady(String account) {
-        if (!Objects.equals(this.account, account)) {
-            ghosts.get(account).die();
-        }
+        readies.put(account, false);
 
-        if (ghosts.size() == 0 && player == null) {
-            System.out.println("done");
+        if (game) {
+            if (!Objects.equals(this.account, account)) {
+                ghosts.get(account).die();
+            }
+
+            if (ghosts.size() == 0 && player == null) {
+                game = false;
+                Greenfoot.setWorld(lobby);
+                System.out.println("done");
+            }
         }
     }
 
@@ -176,6 +184,9 @@ public class Instance extends World implements Communication {
             users.put(account, username);
             scoreboard.put(account, 0);
             ghosts.put(account, ghost);
+            readies.put(account, false);
+            avatars.put(account, (byte) 0);
+            lobby.entry(account);
         }
     }
 
@@ -185,10 +196,16 @@ public class Instance extends World implements Communication {
         ghost.die();
         scoreboard.remove(account);
         users.remove(account);
+        avatars.remove(account);
+        readies.remove(account);
     }
 
     @Override
     public void onSessionPositionUpdate(String account, int positionY) {
+        if (!game) {
+            return;
+        }
+
         if (!Objects.equals(this.account, account)) {
             ghosts.get(account).updatePosition(positionY);
         }
