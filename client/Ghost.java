@@ -45,6 +45,32 @@ public class Ghost extends Character {
         setLocation(getX(), positionY);
     }
 
+    public void avatar(Byte avatar) {
+        switch (avatar) {
+            case 1:
+                setImage("characters/ghost/roman.png");
+            case 2:
+                setImage("characters/ghost/alex.png");
+            case 3:
+                setImage("characters/ghost/david.png");
+            case 4:
+                setImage("characters/ghost/dino.png");
+            case 5:
+                setImage("characters/ghost/ely.png");
+            case 6:
+                setImage("characters/ghost/justin.png");
+            case 7:
+                setImage("characters/ghost/marcus.png");
+            case 8:
+                setImage("characters/ghost/kilian.png");
+            case 9:
+                setImage("characters/ghost/kilian.png");
+            case 0:
+            default:
+                setImage("characters/ghost/findus.png");
+        }
+    }
+
     @Override
     public void die() {
         super.die();

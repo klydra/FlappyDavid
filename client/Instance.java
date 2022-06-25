@@ -1,6 +1,7 @@
 import greenfoot.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -13,7 +14,6 @@ public class Instance extends World implements Communication {
     String username;
     boolean game;
 
-    public Byte character = 0;
     public Player player;
     public HashMap<String, Integer> scoreboard = new HashMap<>();
     public HashMap<String, Byte> avatars = new HashMap<>();
@@ -38,14 +38,6 @@ public class Instance extends World implements Communication {
         controller.communications.authentication.register(username);
     }
 
-    public void act() {
-    }
-
-    @Override
-    public void started() {
-        super.started();
-    }
-
     public void addScore() {
         if (player != null) {
             scoreboard.put(account, scoreboard.get(account) + 1);
@@ -54,70 +46,6 @@ public class Instance extends World implements Communication {
         for(HashMap.Entry<String, Ghost> entry : ghosts.entrySet()) {
             String account = entry.getKey();
             scoreboard.put(account, scoreboard.get(account) + 1);
-        }
-    }
-
-    public Player player(Byte avatar) {
-        switch (avatar) {
-            case 1:
-                player = new PlayerRoman(account, controller, scoreboard, ghosts);
-                break;
-            case 2:
-                player = new PlayerAlex(account, controller, scoreboard, ghosts);
-                break;
-            case 3:
-                player = new PlayerDavid(account, controller, scoreboard, ghosts);
-                break;
-            case 4:
-                player = new PlayerDino(account, controller, scoreboard, ghosts);
-                break;
-            case 5:
-                player = new PlayerEly(account, controller, scoreboard, ghosts);
-                break;
-            case 6:
-                player = new PlayerJustin(account, controller, scoreboard, ghosts);
-                break;
-            case 7:
-                player = new PlayerMarcus(account, controller, scoreboard, ghosts);
-                break;
-            case 8:
-                player = new PlayerKilian(account, controller, scoreboard, ghosts);
-                break;
-            case 9:
-                player = new PlayerSimon(account, controller, scoreboard, ghosts);
-                break;
-            case 0:
-            default:
-                player = new PlayerFindus(account, controller, scoreboard, ghosts);
-                break;
-        }
-
-        addObject(player, 250, 375);
-    }
-
-    public Ghost ghostCharacter(Byte avatar, String account) {
-        switch (avatar) {
-            case 1:
-                return new GhostRoman(account, controller, scoreboard, ghosts);
-            case 2:
-                return new GhostAlex(account, controller, scoreboard, ghosts);
-            case 3:
-                return new GhostDavid(account, controller, scoreboard, ghosts);
-            case 4:
-                return new GhostDino(account, controller, scoreboard, ghosts);
-            case 5:
-                return new GhostEly(account, controller, scoreboard, ghosts);
-            case 6:
-                return new GhostJustin(account, controller, scoreboard, ghosts);
-            case 7:
-                return new GhostMarcus(account, controller, scoreboard, ghosts);
-            case 8:
-                return new GhostKilian(account, controller, scoreboard, ghosts);
-            case 9:
-                return new GhostSimon(account, controller, scoreboard, ghosts);
-            case 0:
-            default:
-                return new GhostFindus(account, controller, scoreboard, ghosts);
         }
     }
 
@@ -131,6 +59,8 @@ public class Instance extends World implements Communication {
         this.account = account;
         users.put(account, username);
         scoreboard.put(account, 0);
+        avatars.put(account, (byte) 0);
+        readies.put(account, false);
         JOptionPane.showMessageDialog(null, "Joined Server.");
     }
 
@@ -151,6 +81,11 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionStart() {
         game = true;
+        lobby.start();
+        player = new Player(account, controller, scoreboard, ghosts);
+        player.avatar(avatars.get(account));
+        addObject(player, 250, 375);
+        lobby.order = new ArrayList<String>();
     }
 
     @Override
@@ -163,14 +98,17 @@ public class Instance extends World implements Communication {
         readies.put(account, false);
 
         if (game) {
-            if (!Objects.equals(this.account, account)) {
+            lobby.order.add(0, account);
+
+            readies.put(account, false);
+
+            if (Objects.equals(this.account, account)) {
                 ghosts.get(account).die();
             }
 
-            if (ghosts.size() == 0 && player == null) {
+            if (!readies.containsValue(true)) {
                 game = false;
                 Greenfoot.setWorld(lobby);
-                System.out.println("done");
             }
         }
     }
@@ -178,7 +116,8 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionUserJoined(String account, String username) {
         if (!Objects.equals(this.account, account)) {
-            Ghost ghost = ghostCharacter((byte) 0, account);
+            Ghost ghost = new Ghost(account, controller, scoreboard, ghosts);
+            ghost.avatar((byte) 0);
             addObject(ghost, 250, 375);
 
             users.put(account, username);
@@ -194,10 +133,12 @@ public class Instance extends World implements Communication {
     public void onSessionUserLeft(String account) {
         Ghost ghost = ghosts.get(account);
         ghost.die();
+        ghosts.remove(account);
         scoreboard.remove(account);
         users.remove(account);
         avatars.remove(account);
         readies.remove(account);
+        lobby.remove(account);
     }
 
     @Override
@@ -214,12 +155,10 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionAvatarUpdate(String account, Byte avatar) {
         if (ghosts.containsKey(account)) {
-            ghosts.get(account).die();
+            ghosts.get(account).avatar(avatar);
+        } else if (Objects.equals(this.account, account)) {
+            player.avatar(avatar);
         }
-
-        Ghost ghost = ghostCharacter((byte) 0, account);
-        ghosts.put(account, ghost);
-        addObject(ghost, 250, 375);
     }
 
     @Override

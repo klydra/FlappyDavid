@@ -10,11 +10,12 @@ public class Lobby extends World {
     Instance instance;
     Controller controller;
 
-    Button readyStatus;
-    Button avatarStatus;
+    ButtonReady ready;
 
     public HashMap<String, Button> entries = new HashMap<String, Button>();
     public ArrayList<String> order = new ArrayList<String>();
+
+    int avatarCount = 10;
 
     public Lobby() {
         super(1000, 750, 1);
@@ -26,13 +27,23 @@ public class Lobby extends World {
 
         connect();
 
-        ready(false);
+        ready = new ButtonReady();
+        ready.ready(false);
+        addObject(ready, 500, 650);
+
+        entry(instance.account);
     }
 
     @Override
     public void act() {
-        if (readyStatus != null && Greenfoot.isKeyDown("space")) {
-            ready(readyStatus.getClass().getSimpleName().equals("ButtonUnready"));
+        if (Greenfoot.isKeyDown("space")) {
+            if (instance.readies.get(instance.account)) {
+                controller.communications.session.unready();
+                ready.ready(false);
+            } else {
+                controller.communications.session.ready();
+                ready.ready(true);
+            }
         }
 
         if (Greenfoot.isKeyDown("escape")) {
@@ -40,7 +51,19 @@ public class Lobby extends World {
         }
 
         if (Greenfoot.isKeyDown("up")) {
+            int currentAvatar = instance.avatars.get(instance.account).intValue();
+            if (currentAvatar + 1 <= avatarCount) {
+                controller.communications.session.avatar((byte) (currentAvatar + 1));
+                entry(instance.account);
+            }
+        }
 
+        if (Greenfoot.isKeyDown("down")) {
+            int currentAvatar = instance.avatars.get(instance.account).intValue();
+            if (currentAvatar - 1 >= 0) {
+                controller.communications.session.avatar((byte) (currentAvatar - 1));
+                entry(instance.account);
+            }
         }
 
         super.act();
@@ -54,19 +77,6 @@ public class Lobby extends World {
 
     public void start() {
         Greenfoot.setWorld(instance);
-    }
-
-    void ready(boolean ready) {
-        if (readyStatus != null) {
-            readyStatus.destroy();
-        }
-
-
-        if (ready) {
-            readyStatus = new ButtonReady();
-        } else {
-            readyStatus = new ButtonUnready();
-        }
     }
 
     void entry(String account) {
@@ -83,37 +93,21 @@ public class Lobby extends World {
             entries.get(account).destroy();
         }
 
-        Button avatar = avatar(instance.avatars.get(account));
+        ButtonAvatar avatar = new ButtonAvatar();
+        avatar.avatar(instance.avatars.get(account));
 
         entries.put(account, avatar);
         addObject(avatar, x, y);
 
-
+        avatar.description(instance.users.get(account), String.valueOf(instance.scoreboard.get(account)));
     }
 
-    Button avatar(Byte avatar) {
-        switch (avatar) {
-            case 1:
-                return new ButtonRoman();
-            case 2:
-                return new ButtonAlex();
-            case 3:
-                return new ButtonDavid();
-            case 4:
-                return new ButtonDino();
-            case 5:
-                return new ButtonEly();
-            case 6:
-                return new ButtonJustin();
-            case 7:
-                return new ButtonMarcus();
-            case 8:
-                return new ButtonKilian();
-            case 9:
-                return new ButtonSimon();
-            case 0:
-            default:
-                return new ButtonFindus();
+    void remove(String account) {
+        order.remove(account);
+
+        if (entries.containsKey(account)) {
+            entries.get(account).destroy();
+            entries.remove(account);
         }
     }
 }

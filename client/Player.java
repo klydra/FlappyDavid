@@ -8,8 +8,8 @@ public class Player extends Character {
     int actTime = 0;
     int gravity = 0;
 
-    public Player(String account, Controller controller, HashMap<String, Integer> scoreboard, HashMap<String, Ghost> ghosts) {
-        super(account, controller, scoreboard, ghosts);
+    public Player(String account, Controller controller, HashMap<String, Integer> scoreboard, HashMap<String, Ghost> players) {
+        super(account, controller, scoreboard, players);
     }
 
     @Override
@@ -58,6 +58,32 @@ public class Player extends Character {
         if (tubeLong != null || tubeMedium != null || tubeShort != null || atFrame)
         {
             die();
+        }
+    }
+
+    public void avatar(Byte avatar) {
+        switch (avatar) {
+            case 1:
+                setImage("characters/player/roman.png");
+            case 2:
+                setImage("characters/player/alex.png");
+            case 3:
+                setImage("characters/player/david.png");
+            case 4:
+                setImage("characters/player/dino.png");
+            case 5:
+                setImage("characters/player/ely.png");
+            case 6:
+                setImage("characters/player/justin.png");
+            case 7:
+                setImage("characters/player/marcus.png");
+            case 8:
+                setImage("characters/player/kilian.png");
+            case 9:
+                setImage("characters/player/kilian.png");
+            case 0:
+            default:
+                setImage("characters/player/findus.png");
         }
     }
 
