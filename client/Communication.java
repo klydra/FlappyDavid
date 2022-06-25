@@ -3,6 +3,7 @@ public interface Communication {
 
     void onAuthenticationRegistered(String account);
     void onAuthenticationTaken();
+    void onAuthenticationBusy();
     void onAuthenticationUnregistered();
 
     void onSessionStart();

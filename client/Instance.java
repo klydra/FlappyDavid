@@ -74,6 +74,13 @@ public class Instance extends World implements Communication {
     }
 
     @Override
+    public void onAuthenticationBusy() {
+        JOptionPane.showMessageDialog(null, "A game is currently in progress. Try again later.");
+        username = "";
+        register();
+    }
+
+    @Override
     public void onAuthenticationUnregistered() {
         JOptionPane.showMessageDialog(null, "Left server.");
         username = "";
@@ -110,7 +117,7 @@ public class Instance extends World implements Communication {
             readies.put(account, false);
 
             if (!Objects.equals(this.account, account)) {
-                ghosts.get(account).die();
+                ghosts.get(account).destroy();
                 ghosts.remove(account);
             } else {
                 player = null;
@@ -173,7 +180,7 @@ public class Instance extends World implements Communication {
     @Override
     public void onSessionUserLeft(String account) {
         Ghost ghost = ghosts.get(account);
-        ghost.die();
+        ghost.destroy();
         ghosts.remove(account);
         scoreboard.remove(account);
         users.remove(account);

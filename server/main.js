@@ -58,10 +58,16 @@ wsServer.on("connection", (socket) => {
       case TYPE_AUTHENTICATION:
         const OP_REGISTER = 1;
         const OP_TAKEN = 2;
-        const OP_UNREGISTER = 3;
+        const OP_BUSY = 3;
+        const OP_UNREGISTER = 4;
 
         switch (message[1]) {
           case OP_REGISTER:
+            if (game) {
+              socket.send(header(TYPE_AUTHENTICATION, OP_BUSY));
+              return;
+            }
+
             let account = Buffer.from(crypto.randomUUID());
             let username = getContent(message).toString();
 

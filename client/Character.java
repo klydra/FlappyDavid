@@ -18,7 +18,7 @@ public class Character extends Actor
         this.ghosts = ghosts;
     }
 
-    public void die() {
+    public void destroy() {
         getWorld().removeObject(this);
     }
 }

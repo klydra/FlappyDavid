@@ -61,7 +61,8 @@ class Communications {
     static class Authentication {
         final Byte OP_REGISTER = 1;
         final Byte OP_TAKEN = 2;
-        final Byte OP_UNREGISTER = 3;
+        final Byte OP_BUSY = 3;
+        final Byte OP_UNREGISTER = 4;
 
         public void register(String username) {
             ByteBuffer message = ByteBuffer.allocate(2 + username.getBytes().length);
@@ -180,6 +181,10 @@ class ControllerConnection implements WebSocket.Listener {
 
             if (action[1] == communications.authentication.OP_TAKEN) {
                 world.onAuthenticationTaken();
+            }
+
+            if (action[1] == communications.authentication.OP_BUSY) {
+                world.onAuthenticationBusy();
             }
 
             else if (action[1] == communications.authentication.OP_UNREGISTER) {

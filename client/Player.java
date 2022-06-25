@@ -57,7 +57,7 @@ public class Player extends Character {
 
         if (tubeLong != null || tubeMedium != null || tubeShort != null || atFrame)
         {
-            die();
+            destroy();
         }
     }
 
@@ -98,8 +98,8 @@ public class Player extends Character {
     }
 
     @Override
-    public void die() {
+    public void destroy() {
         controller.communications.session.unready();
-        super.die();
+        super.destroy();
     }
 }
