@@ -1,4 +1,3 @@
-import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -11,13 +10,13 @@ public class Controller {
     public static final int LENGTH_ACCOUNT = 36; /* Account ID byte array length */
     public static final int LENGTH_POSITION = (new byte[] {((Integer) /* | */ 450 /* | */ ).byteValue()}).length; /* Maximum Position length */
 
-    Background world;
+    Instance world;
     public Communications communications = new Communications();
     WebSocket.Listener listener;
     HttpClient client;
     WebSocket webSocket;
 
-    public Controller(Background background, String uri) {
+    public Controller(Instance background, String uri) {
         world = background;
         listener = new ControllerConnection(world, communications);
         client = HttpClient.newHttpClient();
@@ -127,10 +126,10 @@ class Communications {
 }
 
 class ControllerConnection implements WebSocket.Listener {
-    Background world;
+    Instance world;
     Communications communications;
 
-    ControllerConnection(Background background, Communications communications) {
+    ControllerConnection(Instance background, Communications communications) {
         this.world = background;
         this.communications = communications;
     }
