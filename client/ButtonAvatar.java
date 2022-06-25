@@ -2,7 +2,7 @@ public class ButtonAvatar extends Button {
     ButtonText username;
     ButtonText score;
 
-    public void avatar(Byte avatar) {
+    public void avatar(int avatar) {
         switch (avatar) {
             case 1:
                 setImage("characters/player/roman.png");
@@ -38,7 +38,7 @@ public class ButtonAvatar extends Button {
 
         this.username = new ButtonText();
         this.username.content(username, 20);
-        getWorld().addObject(this.username, getX() + 50, getY());
+        getWorld().addObject(this.username, getX() + 65, getY());
 
         this.score = new ButtonText();
         this.score.content(score, 20);

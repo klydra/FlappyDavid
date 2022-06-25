@@ -61,7 +61,7 @@ public class Player extends Character {
         }
     }
 
-    public void avatar(Byte avatar) {
+    public void avatar(int avatar) {
         switch (avatar) {
             case 1:
                 setImage("characters/player/roman.png");

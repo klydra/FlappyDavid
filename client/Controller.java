@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -121,12 +122,12 @@ class Communications {
             webSocket.sendBinary(message.rewind(), true);
         }
 
-        public void avatar(Byte avatar) {
-            ByteBuffer message = ByteBuffer.allocate(3);
+        public void avatar(int avatar) {
+            ByteBuffer message = ByteBuffer.allocate(6);
 
             message.put(TYPE_SESSION);
             message.put(OP_AVATAR);
-            message.put(avatar);
+            message.putInt(avatar);
 
             webSocket.sendBinary(message.rewind(), true);
         }
@@ -222,7 +223,7 @@ class ControllerConnection implements WebSocket.Listener {
 
             else if (action[1] == communications.session.OP_AVATAR) {
                 byte[] content = getContent(action);
-                world.onSessionAvatarUpdate(getAccount(content), content[0]);
+                world.onSessionAvatarUpdate(getAccount(content), ByteBuffer.wrap(getAccountPayload(content)).getInt());
             }
 
             else if (action[1] == communications.session.OP_OBSTACLE) {

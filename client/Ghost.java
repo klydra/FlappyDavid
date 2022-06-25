@@ -45,7 +45,7 @@ public class Ghost extends Character {
         setLocation(getX(), positionY);
     }
 
-    public void avatar(Byte avatar) {
+    public void avatar(int avatar) {
         switch (avatar) {
             case 1:
                 setImage("characters/ghost/roman.png");

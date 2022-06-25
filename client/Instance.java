@@ -16,7 +16,7 @@ public class Instance extends World implements Communication {
 
     public Player player;
     public HashMap<String, Integer> scoreboard = new HashMap<>();
-    public HashMap<String, Byte> avatars = new HashMap<>();
+    public HashMap<String, Integer> avatars = new HashMap<>();
     public HashMap<String, String> users = new HashMap<>();
     public HashMap<String, Ghost> ghosts = new HashMap<>();
     public HashMap<String, Boolean> readies = new HashMap<>();
@@ -34,7 +34,8 @@ public class Instance extends World implements Communication {
     }
 
     void register() {
-        username = JOptionPane.showInputDialog("Enter your Username");
+        // TODO : username = JOptionPane.showInputDialog("Enter your Username");
+        username = "klydra";
         controller.communications.authentication.register(username);
     }
 
@@ -59,7 +60,7 @@ public class Instance extends World implements Communication {
         this.account = account;
         users.put(account, username);
         scoreboard.put(account, 0);
-        avatars.put(account, (byte) 0);
+        avatars.put(account, 0);
         readies.put(account, false);
         JOptionPane.showMessageDialog(null, "Joined Server.");
     }
@@ -75,7 +76,6 @@ public class Instance extends World implements Communication {
     public void onAuthenticationUnregistered() {
         JOptionPane.showMessageDialog(null, "Left server.");
         username = "";
-        register();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Instance extends World implements Communication {
             scoreboard.put(account, 0);
             ghosts.put(account, ghost);
             readies.put(account, false);
-            avatars.put(account, (byte) 0);
+            avatars.put(account, 0);
             lobby.entry(account);
         }
     }
@@ -153,12 +153,8 @@ public class Instance extends World implements Communication {
     }
 
     @Override
-    public void onSessionAvatarUpdate(String account, Byte avatar) {
-        if (ghosts.containsKey(account)) {
-            ghosts.get(account).avatar(avatar);
-        } else if (Objects.equals(this.account, account)) {
-            player.avatar(avatar);
-        }
+    public void onSessionAvatarUpdate(String account, int avatar) {
+        avatars.put(account, avatar);
     }
 
     @Override

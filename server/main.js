@@ -201,7 +201,7 @@ wsServer.on("connection", (socket) => {
             let content_ = getContent(message);
             broadcast(
               TYPE_SESSION,
-              OP_UPDATE,
+              OP_AVATAR,
               Buffer.concat([account__, content_])
             );
             accounts_avatar.set(account__, content_);

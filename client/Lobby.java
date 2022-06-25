@@ -12,10 +12,11 @@ public class Lobby extends World {
 
     ButtonReady ready;
 
-    public HashMap<String, Button> entries = new HashMap<String, Button>();
+    public HashMap<String, ButtonAvatar> entries = new HashMap<String, ButtonAvatar>();
     public ArrayList<String> order = new ArrayList<String>();
 
     int avatarCount = 10;
+    boolean keyPress = false;
 
     public Lobby() {
         super(1000, 750, 1);
@@ -36,7 +37,8 @@ public class Lobby extends World {
 
     @Override
     public void act() {
-        if (Greenfoot.isKeyDown("space")) {
+        if (Greenfoot.isKeyDown("space") && !keyPress) {
+            keyPress = true;
             if (instance.readies.get(instance.account)) {
                 controller.communications.session.unready();
                 ready.ready(false);
@@ -46,31 +48,40 @@ public class Lobby extends World {
             }
         }
 
-        if (Greenfoot.isKeyDown("escape")) {
-            connect();
+        if (Greenfoot.isKeyDown("escape") && !keyPress) {
+            keyPress = true;
+            controller.communications.authentication.unregister();
+            System.exit(0);
         }
 
-        if (Greenfoot.isKeyDown("up")) {
-            int currentAvatar = instance.avatars.get(instance.account).intValue();
+        if (Greenfoot.isKeyDown("up") && !keyPress) {
+            keyPress = true;
+            int currentAvatar = instance.avatars.get(instance.account);
             if (currentAvatar + 1 <= avatarCount) {
-                controller.communications.session.avatar((byte) (currentAvatar + 1));
+                controller.communications.session.avatar(currentAvatar + 1);
                 entry(instance.account);
             }
         }
 
-        if (Greenfoot.isKeyDown("down")) {
-            int currentAvatar = instance.avatars.get(instance.account).intValue();
+        if (Greenfoot.isKeyDown("down") && !keyPress) {
+            keyPress = true;
+            int currentAvatar = instance.avatars.get(instance.account);
             if (currentAvatar - 1 >= 0) {
-                controller.communications.session.avatar((byte) (currentAvatar - 1));
+                controller.communications.session.avatar(currentAvatar - 1);
                 entry(instance.account);
             }
+        }
+
+        if (!Greenfoot.isKeyDown("escape") && !Greenfoot.isKeyDown("space") && !Greenfoot.isKeyDown("up") && !Greenfoot.isKeyDown("down")) {
+            keyPress = false;
         }
 
         super.act();
     }
 
     public void connect() {
-        uri = JOptionPane.showInputDialog("Enter Server URI");
+        // TODO : uri = JOptionPane.showInputDialog("Enter Server URI");
+        uri = "ws://localhost";
         instance = new Instance(this, uri);
         controller = instance.controller;
     }
@@ -86,7 +97,7 @@ public class Lobby extends World {
 
         int index = order.indexOf(account);
 
-        int x = 300;
+        int x = 375;
         int y = 100 + (index * 50);
 
         if (entries.containsKey(account)) {

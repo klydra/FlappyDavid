@@ -11,6 +11,6 @@ public interface Communication {
     void onSessionUserJoined(String account, String username);
     void onSessionUserLeft(String account);
     void onSessionPositionUpdate(String account, int positionY);
-    void onSessionAvatarUpdate(String account, Byte avatar);
+    void onSessionAvatarUpdate(String account, int avatar);
     void onSessionObstacle(int position);
 }
