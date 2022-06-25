@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=Communication
+comment1.params=message
+comment1.target=void\ onAuxiliaryMessage(java.lang.String)
+comment2.params=
+comment2.target=void\ onAuthenticationRegistered()
+comment3.params=
+comment3.target=void\ onAuthenticationUnregistered()
+comment4.params=
+comment4.target=void\ onSessionStart()
+comment5.params=account\ username
+comment5.target=void\ onSessionUserJoined(byte[],\ java.lang.String)
+comment6.params=account\ positionY
+comment6.target=void\ onSessionPositionUpdate(byte[],\ int)
+comment7.params=account\ avatar
+comment7.target=void\ onSessionAvatarUpdate(byte[],\ java.lang.Byte)
+comment8.params=position
+comment8.target=void\ onSessionObstacle(int)
+numComments=9
