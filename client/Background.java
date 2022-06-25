@@ -19,77 +19,29 @@ public class Background extends World implements Communication
     public Background()
     {    
         super(1000, 750, 1);
-        //controller = new Controller (this, "");
+        controller = new Controller(this, "ws://localhost:80");
         Frame f = new Frame();
         addObject(f,500,375);
         David d = new David(controller);
         addObject(d,250,375);
-        
+
+        controller.communications.authentication.register("klydra");
     }
     public void act()
     {
-        actTime++;
-        if(delay < actTime)
-        {
-            int position = Greenfoot.getRandomNumber(450);
-            position = position + 150;
-            int winkel = 180;
-            int speed = 2;
-            if(position >= 525)
-            {
-                int posY1 = position - 350;
-                int posX1 = 1000;
-                int posY2 = position + 149;
-                int posX2 = 1000;
-                addObject(new TubeLong(winkel,speed),posX1,posY1);
-                addObject(new TubeShort(winkel,speed),posX2,posY2);
-            }
-            if(400 <= position && position < 525)
-            {
-                int posY1 = position - 350;
-                int posX1 = 1000;
-                int posY2 = position + 225;
-                int posX2 = 1000;
-                addObject(new TubeLong(winkel,speed),posX1,posY1);
-                addObject(new TubeMedium(winkel,speed),posX2,posY2);
-            }
-            if(350 < position && position < 400)
-            {
-                int posY1 = position - 349;
-                int posX1 = 1000;
-                int posY2 = position + 349;
-                int posX2 = 1000;
-                addObject(new TubeLong(winkel,speed),posX1,posY1);
-                addObject(new TubeLong(winkel,speed),posX2,posY2);
-            }
-            if(225 < position && position <= 350)
-            {
-                int posY1 = position - 225;
-                int posX1 = 1000;
-                int posY2 = position + 350;
-                int posX2 = 1000;
-                addObject(new TubeMedium(winkel,speed),posX1,posY1);
-                addObject(new TubeLong(winkel,speed),posX2,posY2);
-            }
-            if(position <= 225)
-            {
-                int posY1 = position - 149; 
-                int posX1 = 1000;
-                int posY2 = position + 350;
-                int posX2 = 1000;
-                addObject(new TubeShort(winkel,speed),posX1,posY1);
-                addObject(new TubeLong(winkel,speed),posX2,posY2);
-            }
-            actTime = 0;
-        }
     }
     @Override
     public void onAuxiliaryMessage(String message) {
-
+        System.out.println(message);
     }
 
     @Override
     public void onAuthenticationRegistered() {
+        controller.communications.session.ready();
+    }
+
+    @Override
+    public void onAuthenticationTaken() {
 
     }
 
@@ -104,7 +56,22 @@ public class Background extends World implements Communication
     }
 
     @Override
+    public void onSessionReady(byte[] account) {
+
+    }
+
+    @Override
+    public void onSessionUnReady(byte[] account) {
+
+    }
+
+    @Override
     public void onSessionUserJoined(byte[] account, String username) {
+
+    }
+
+    @Override
+    public void onSessionUserLeft(byte[] account) {
 
     }
 
@@ -117,14 +84,13 @@ public class Background extends World implements Communication
     public void onSessionAvatarUpdate(byte[] account, Byte avatar) {
 
     }
-//150-600
+
     @Override
     public void onSessionObstacle(int position) 
     {
         actTime++;
         if(delay < actTime)
         {
-            Greenfoot.getRandomNumber(450);
             int winkel = 180;
             int speed = 2;
             if(position > 400)
@@ -136,7 +102,7 @@ public class Background extends World implements Communication
                 addObject(new TubeLong(winkel,speed),posX1,posY1);
                 addObject(new TubeShort(winkel,speed),posX2,posY2);
             }
-            if(250< position && position < 400)
+            if(250 < position && position < 400)
             {
                 int posY1 = position - 250;
                 int posX1 = 1000;

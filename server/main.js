@@ -21,9 +21,11 @@ let accounts_ready = new Map();
 let accounts_avatar = new Map();
 
 wsServer.on("connection", (socket) => {
+  console.log("CONNECTED")
+
   const LENGTH_ACCOUNT = 36;
   const LENGTH_POSITION = 450;
-  const LENGTH_DELAY = 2.5;
+  const LENGTH_DELAY = 2500;
 
   const TYPE_AUXILIARY = 1;
   const TYPE_AUTHENTICATION = 2;
@@ -33,6 +35,21 @@ wsServer.on("connection", (socket) => {
   const OP_LEFT = 4;
   const OP_AVATAR = 6;
 
+  /* socket.on("close", (socket) => {
+    console.log("DISCONNECTED")
+
+    let account = connections_accounts[socket];
+    accounts_avatar.delete(account);
+    accounts_ready.delete(account);
+    let username = accounts_users.get(account);
+    accounts_users.delete(account);
+    connections_accounts.delete(socket);
+
+    broadcast(TYPE_SESSION, OP_LEFT, account);
+
+    console.log("CLEANUP : " + username);
+  }) */
+
   socket.on("message", (message) => {
     switch (message[0]) {
       case TYPE_AUXILIARY:
@@ -40,17 +57,31 @@ wsServer.on("connection", (socket) => {
 
       case TYPE_AUTHENTICATION:
         const OP_REGISTER = 1;
-        const OP_UNREGISTER = 2;
+        const OP_TAKEN = 2;
+        const OP_UNREGISTER = 3;
 
         switch (message[1]) {
           case OP_REGISTER:
             let account = Buffer.from(crypto.randomUUID());
             let username = getContent(message).toString();
 
+            let exists = false;
+
+            accounts_users.forEach((value, _) => {
+              if (value === username) {
+                exists = true;
+              }
+            })
+
+            if (exists) {
+              socket.send(header(TYPE_AUTHENTICATION, OP_TAKEN));
+              return;
+            }
+
             accounts_users.forEach((value, key) => {
               socket.send(
                 Buffer.concat([
-                  header(TYPE_SESSION, OP_AVATAR),
+                  header(TYPE_SESSION, OP_JOINED),
                   key,
                   Buffer.from(value),
                 ])
@@ -75,12 +106,15 @@ wsServer.on("connection", (socket) => {
             );
 
             socket.send(header(TYPE_AUTHENTICATION, OP_REGISTER));
+
+            console.log("REGISTERED : " + username);
             return;
 
           case OP_UNREGISTER:
-            let account_ = connections_accounts[socket];
+            let account_ = connections_accounts.get(socket);
             accounts_avatar.delete(account_);
             accounts_ready.delete(account_);
+            let username_ = accounts_users.get(account_);
             accounts_users.delete(account_);
             connections_accounts.delete(socket);
 
@@ -89,6 +123,8 @@ wsServer.on("connection", (socket) => {
             socket.send(header(TYPE_AUTHENTICATION, OP_UNREGISTER));
 
             socket.close();
+
+            console.log("UNREGISTERED : " + username_);
             return;
         }
         return;
@@ -105,8 +141,12 @@ wsServer.on("connection", (socket) => {
 
         switch (message[1]) {
           case OP_READY:
-            let account = connections_accounts[socket];
+            let account = connections_accounts.get(socket);
             accounts_ready.set(account, true);
+
+            broadcast(TYPE_SESSION, OP_READY, account);
+
+            console.log("READY : " + accounts_users.get(account));
 
             let all_ready = true;
 
@@ -117,16 +157,16 @@ wsServer.on("connection", (socket) => {
             });
 
             if (all_ready) {
-              broadcast(TYPE_SESSION, OP_START);
-              pipes(TYPE_SESSION, OP_OBSTACLE, LENGTH_POSITION, LENGTH_DELAY);
-              game = true;
-            }
+              console.log("STARTING");
 
-            broadcast(TYPE_SESSION, OP_READY, account);
+              broadcast(TYPE_SESSION, OP_START);
+              game = true;
+              pipes(TYPE_SESSION, OP_OBSTACLE, LENGTH_POSITION, LENGTH_DELAY);
+            }
             return;
 
           case OP_UNREADY:
-            let account_ = connections_accounts[socket];
+            let account_ = connections_accounts.get(socket);
             accounts_ready.set(account_, false);
 
             let all_unready = true;
@@ -142,19 +182,22 @@ wsServer.on("connection", (socket) => {
             }
 
             broadcast(TYPE_SESSION, OP_UNREADY, account_);
+
+            console.log("UNREADY : " + accounts_users.get(account_));
             return;
 
           case OP_UPDATE:
             broadcast(
               TYPE_SESSION,
               OP_UPDATE,
-              Buffer.concat([connections_accounts[socket], getContent(message)])
+              Buffer.concat([connections_accounts.get(socket), getContent(message)])
             );
 
+            console.log("UPDATE : " + accounts_users.get(connections_accounts.get(socket)));
             return;
 
           case OP_AVATAR:
-            let account__ = connections_accounts[socket];
+            let account__ = connections_accounts.get(socket);
             let content = getContent(message);
             broadcast(
               TYPE_SESSION,
@@ -163,6 +206,7 @@ wsServer.on("connection", (socket) => {
             );
             accounts_avatar.set(account__, content);
 
+            console.log("AVATAR : " + accounts_users.get(account__));
             return;
         }
     }
@@ -175,13 +219,18 @@ function getContent(buffer) {
 
 function header(type, operation) {
   let message = Buffer.alloc(2);
-  message.writeInt8(type);
-  message.writeInt8(operation);
+  message.writeUInt8(type);
+  message.writeUInt8(operation, 1);
   return message;
 }
 
 function broadcast(type, operation, content) {
-  let broadcast = Buffer.concat([header(type, operation), content]);
+  let broadcast;
+  if (typeof content === "undefined") {
+    broadcast = header(type, operation);
+  } else {
+    broadcast = Buffer.concat([header(type, operation), content]);
+  }
 
   connections_accounts.forEach((_, key) => {
     key.send(broadcast);
@@ -190,7 +239,12 @@ function broadcast(type, operation, content) {
 
 function pipes(type, operation, possibilities, delay) {
   if (game) {
-    broadcast(type, operation, Math.floor(Math.random() * possibilities));
+    let value = Math.floor(Math.random() * possibilities)
+
+    let buffer = Buffer.alloc(5);
+    buffer.writeUInt16LE(value);
+
+    broadcast(type, operation, buffer);
     setTimeout(() => pipes(type, operation, possibilities, delay), delay);
   }
 }
