@@ -10,7 +10,8 @@ public class Instance extends World implements Communication {
     public Lobby lobby;
     public Controller controller;
     public Frame frame;
-    public ArrayList<Tube> tubes = new ArrayList<>();
+    public ButtonText usernameStatus;
+    public ButtonText scoreStatus;
 
     public String account;
     String username;
@@ -33,16 +34,29 @@ public class Instance extends World implements Communication {
 
         frame = new Frame();
         addObject(frame, 500, 375);
+
+        usernameStatus = new ButtonText(Color.WHITE, 24);
+        usernameStatus.content(" ");
+        addObject(usernameStatus, 835, 62);
+
+        scoreStatus = new ButtonText(Color.WHITE,36);
+        scoreStatus.content("0");
+        addObject(scoreStatus, 160, 62);
+
+        setPaintOrder(ButtonText.class, Frame.class, Player.class, Ghost.class);
     }
 
     void register() {
-        username = JOptionPane.showInputDialog("Enter your Username");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        username = JOptionPane.showInputDialog(jframe, "Enter your Username");
         controller.communications.authentication.register(username);
     }
 
     public void addScore() {
         if (player != null) {
             scoreboard.put(account, scoreboard.get(account) + 1);
+            scoreStatus.content(scoreboard.get(account).toString());
         }
 
         for(HashMap.Entry<String, Ghost> entry : ghosts.entrySet()) {
@@ -63,26 +77,35 @@ public class Instance extends World implements Communication {
         scoreboard.put(account, 0);
         avatars.put(account, 0);
         readies.put(account, false);
-        JOptionPane.showMessageDialog(null, "Joined Server.");
+
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "Joined Server.");
     }
 
     @Override
     public void onAuthenticationTaken() {
-        JOptionPane.showMessageDialog(null, "Username already taken.");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "Username already taken.");
         username = "";
         register();
     }
 
     @Override
     public void onAuthenticationBusy() {
-        JOptionPane.showMessageDialog(null, "A game is currently in progress. Try again later.");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "A game is currently in progress. Try again later.");
         username = "";
         register();
     }
 
     @Override
     public void onAuthenticationUnregistered() {
-        JOptionPane.showMessageDialog(null, "Left server.");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "Left server.");
         username = "";
     }
 
@@ -90,6 +113,8 @@ public class Instance extends World implements Communication {
     public void onSessionStart() {
         game = true;
         lobby.start();
+
+        usernameStatus.content(username);
 
         player = new Player(account, controller, scoreboard, ghosts);
         player.avatar(avatars.get(account));
@@ -150,11 +175,9 @@ public class Instance extends World implements Communication {
                     ghosts.put(user.getKey(), ghost);
                 }
 
-                System.out.println("e");
+                scoreStatus.content("0");
 
                 lobby.ready.ready(false);
-
-                System.out.println("e");
 
                 Greenfoot.setWorld(lobby);
             }

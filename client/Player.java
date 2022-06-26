@@ -100,6 +100,7 @@ public class Player extends Character {
     @Override
     public void destroy() {
         controller.communications.session.unready();
+        Greenfoot.playSound("sounds/bruh.mp3");
         super.destroy();
     }
 }

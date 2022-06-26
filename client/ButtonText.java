@@ -2,7 +2,15 @@ import greenfoot.Color;
 import greenfoot.GreenfootImage;
 
 public class ButtonText extends Button {
-    public void content(String text, int fontSize) {
-        setImage(new GreenfootImage(text, fontSize, Color.BLACK, new Color(0, 0, 0, 0)));
+    Color color;
+    int fontSize;
+
+    public ButtonText(Color color, int fontSize) {
+        this.color = color;
+        this.fontSize = fontSize;
+    }
+
+    public void content(String text) {
+        setImage(new GreenfootImage(text, fontSize, color, new Color(0, 0, 0, 0)));
     }
 }

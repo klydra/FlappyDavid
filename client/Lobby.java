@@ -82,8 +82,9 @@ public class Lobby extends World {
     }
 
     public void connect() {
-        // TODO : uri = JOptionPane.showInputDialog("Enter Server URI");
-        uri = "ws://localhost";
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        uri = JOptionPane.showInputDialog(jframe, "Enter Server URI");
         instance = new Instance(this, uri);
         controller = instance.controller;
     }

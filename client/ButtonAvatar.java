@@ -1,3 +1,4 @@
+import greenfoot.Color;
 import greenfoot.GreenfootImage;
 
 public class ButtonAvatar extends Button {
@@ -48,12 +49,12 @@ public class ButtonAvatar extends Button {
             getWorld().removeObject(this.score);
         }
 
-        this.username = new ButtonText();
-        this.username.content(username, 20);
-        getWorld().addObject(this.username, getX() + 65, getY());
+        this.username = new ButtonText(Color.BLACK, 20);
+        this.username.content(username);
+        getWorld().addObject(this.username, getX() + 130, getY());
 
-        this.score = new ButtonText();
-        this.score.content(score, 20);
+        this.score = new ButtonText(Color.BLACK, 20);
+        this.score.content(score);
         getWorld().addObject(this.score, getX() + 250, getY());
     }
 

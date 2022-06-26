@@ -31,7 +31,9 @@ public class Controller {
         try {
             webSocket = client.newWebSocketBuilder().buildAsync(URI.create(uri), listener).get();
         } catch (InterruptedException | ExecutionException e) {
-            JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            JFrame jframe = new JFrame();
+            jframe.setAlwaysOnTop(true);
+            JOptionPane.showMessageDialog(jframe, "Could not connect to server.");
             lobby.connect();
         }
 
@@ -146,13 +148,17 @@ class ControllerConnection implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        JOptionPane.showMessageDialog(null, "Connected.");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "Connected.");
         WebSocket.Listener.super.onOpen(webSocket);
     }
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        JOptionPane.showMessageDialog(null, "Connection closed.");
+        JFrame jframe = new JFrame();
+        jframe.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(jframe, "Connection closed.");
         Greenfoot.setWorld(new Lobby());
         return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
     }
@@ -221,8 +227,6 @@ class ControllerConnection implements WebSocket.Listener {
                 int value = (payload.length - 1) * 255;
                 value += payload[payload.length - 1] & 0xFF;
 
-                System.out.println(value);
-
                 world.onSessionPositionUpdate(getAccount(content), value);
             }
 
@@ -235,8 +239,6 @@ class ControllerConnection implements WebSocket.Listener {
                 byte[] content = getContent(action);
                 int value = (content.length - 1) * 255;
                 value += content[content.length - 1] & 0xFF;
-
-                System.out.println(value);
 
                 world.onSessionObstacle(value);
             }
