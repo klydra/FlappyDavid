@@ -1,0 +1,24 @@
+FLAPPY DAVID 
+by Jan Klinge, Justin Lippold
+
+PREPERATION:
+- Greenfoot Installation
+- node.js and npm Installation
+- Extract the archive
+
+RUN SERVER:
+- In the "server" directory, run "npm install" to install the dependencies
+- To start the server, use "npm run start"
+- By default, the server will listen on the port 80 for HTTP WebSocket requests
+
+RUN CLIENT:
+- Open and run the scenario in Greenfoot
+- For the URI, use the server's endpoint (for local installations for example : "ws://localhost")
+- Input a username that has a maximum length of 20 characters
+
+CONTROLS:
+- Arrow Keys up and down: Change Avatar
+- Space Bar: Ready / Unready toggle
+- Escape: Disconnect and Exit
+
+- Space Bar: Jump
