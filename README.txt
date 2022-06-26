@@ -12,7 +12,8 @@ RUN SERVER:
 - By default, the server will listen on the port 80 for HTTP WebSocket requests
 
 RUN CLIENT:
-- Open and run the scenario in Greenfoot
+- Either compile and run the program using the configuration in "client/.idea/" 
+  OR run the precompiled jar using the command in CMD "<Greenfoot Installation>\jdk\bin\java.exe --module-path="<Greenfoot Installation>\lib\javafx\lib" --add-modules=javafx.controls,javafx.fxml -jar FlappyDavid.jar"
 - For the URI, use the server's endpoint (for local installations for example : "ws://localhost")
 - Input a username that has a maximum length of 20 characters
 

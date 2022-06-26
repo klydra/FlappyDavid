@@ -1,10 +1,10 @@
 #Greenfoot project file
-class.Instance.image=background.png
-class.Blur.image=Blur.png
-class.Frame.image=Frame.png
-class.TubeLong.image=pipes/Long.png
-class.TubeMedium.image=pipes/Medium.png
-class.TubeShort.image=pipes/Short.png
+class.Instance.image=images/background.png
+class.Blur.image=blur.png
+class.Frame.image=frame.png
+class.TubeLong.image=pipes/long.png
+class.TubeMedium.image=pipes/medium.png
+class.TubeShort.image=pipes/short.png
 dependency1.from=Instance
 dependency1.to=Controller
 dependency1.type=UsesDependency
